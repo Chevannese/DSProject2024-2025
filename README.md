@@ -6,3 +6,4 @@ List of latest classes (for now)
 4. Book.java
 5. User.java
 6. Admin.java
+7. Stack.java
