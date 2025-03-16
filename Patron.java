@@ -1,4 +1,4 @@
-package pack;
+//package pack;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,22 +13,22 @@ public class Patron extends User
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String lNumb;
+	private String lnumb;
 	private LinkedList<Book> books;
 
 //Default Constructor
  public Patron() 
  {
      super(); // Calls the constructor of the superclass User
-     lNumb = "";
+     lnumb = "";
      books = new LinkedList<>(); // Initialize the LinkedList
  }
  
  //Primary Constructor
- public Patron(String userID, String fname, String lname, String username, Password password,String lNumb, LinkedList<Book> books)
+ public Patron(String userID, String fname, String lname, String username, Password password,String lnumb, LinkedList<Book> books)
  {
 	 super(userID,fname,lname,username,password);
-	 this.lNumb = lNumb;
+	 this.lnumb = lnumb;
 	 this.books = books;
  }
  
@@ -36,16 +36,16 @@ public class Patron extends User
  public Patron(Patron pat)
  {
 	 super(pat);
-	 this.lNumb = pat.lNumb;
+	 this.lnumb = pat.lnumb;
 	 this.books = pat.books;
  }
 
- public String getlNumb() {
-     return lNumb;
+ public String getlnumb() {
+     return lnumb;
  }
 
- public void setlNumb(String lNumb) {
-     this.lNumb = lNumb;
+ public void setlnumb(String lnumb) {
+     this.lnumb = lnumb;
  }
 
  public LinkedList<Book> getBooks() {
@@ -59,7 +59,7 @@ public class Patron extends User
  public void Display() 
  {
 	 super.Display();
-     System.out.println("Library Number:  " + lNumb);
+     System.out.println("Library Number:  " + lnumb);
      System.out.print("Books: ");
      books.Display();
      System.out.println("");
@@ -73,10 +73,9 @@ public class Patron extends User
 	    xml.append("  <fName>").append(fName).append("</fName>\n");
 	    xml.append("  <lName>").append(lName).append("</lName>\n");
 	    xml.append("  <Username1>").append(username).append("</Username1>\n");
-	    //I don't know how to hash the password - Chev
 	    xml.append("  <Username2>").append(password.getUsername()).append("</Username2>\n");
 	    xml.append("  <password>").append(password.getPassword()).append("</password>\n");
-	    xml.append("  <lNumb>").append(lNumb).append("</lNumb>\n");
+	    xml.append("  <lnumb>").append(lnumb).append("</lnumb>\n");
 	    xml.append("  <Collection>\n");
 	    books.forEach(book -> xml.append(book.toXML()).append("\n"));
 	    xml.append("  </Collection>\n");
