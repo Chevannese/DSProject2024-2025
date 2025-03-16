@@ -4,3 +4,4 @@ List of latest classes (for now)
 2. Node.java
 3. Queue.java
 4. Book.java
+5. User.java
