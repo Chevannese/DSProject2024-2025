@@ -1,4 +1,4 @@
-//package pack;
+package pack;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -70,8 +70,8 @@ public class Patron extends User
 	 StringBuilder xml = new StringBuilder();
 	    xml.append("<Patron>\n");
 	    xml.append("  <userID>").append(userID).append("</userID>\n");
-	    xml.append("  <fName>").append(fName).append("</fName>\n");
-	    xml.append("  <lName>").append(lName).append("</lName>\n");
+	    xml.append("  <fname>").append(fname).append("</fname>\n");
+	    xml.append("  <lname>").append(lname).append("</lname>\n");
 	    xml.append("  <Username1>").append(username).append("</Username1>\n");
 	    xml.append("  <Username2>").append(password.getUsername()).append("</Username2>\n");
 	    xml.append("  <password>").append(password.getPassword()).append("</password>\n");
