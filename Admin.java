@@ -1,4 +1,4 @@
-package pack;
+//package pack;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -86,10 +86,7 @@ public class Admin extends User {
 				scanner.nextLine(); // Clear the newline character from the input buffer
 
 				System.out.println("---Book Details---");
-				System.out.println("Book ISBN: " + addBook.getISBN());
-				System.out.println("Book Title: " + addBook.getTitle());
-				System.out.println("Book Author: " + addBook.getAuthorFName() + " " + addBook.getAuthorLName());
-				System.out.println("Book Status: " + (addBook.getStatus() ? "SYSTEM: Available" : "SYSTEM: Checked Out"));
+				addBook.Display()
 				System.out.println();
 
 				books.append(addBook); // Add the book to the list
@@ -228,10 +225,7 @@ public class Admin extends User {
 						scanner.nextLine(); // Clear the newline character from the input buffer
 
 						System.out.println("---New Book Details---");
-						System.out.println("Book ISBN: " + book.getISBN());
-						System.out.println("Book Title: " + book.getTitle());
-						System.out.println("Book Author: " + book.getAuthorFname() + book.getAuthorLname());
-						System.out.println("Book Status: " + (book.getStatus() ? "SYSTEM: Available" : "SYSTEM: Checked Out"));
+						book.Display();
 						System.out.println();
 
 						validInput = true; // Set to true if all inputs are valid
@@ -271,10 +265,7 @@ public class Admin extends User {
 				for (Book book : books) {
 					if (book.getISBN().equals(isbn)) {
 						System.out.println("---Book Details---");
-						System.out.println("Book ISBN: " + book.getISBN());
-						System.out.println("Book Title: " + book.getTitle());
-						System.out.println("Book Author: " + book.getAuthorFName() + " " + book.getAuthorLName());
-						System.out.println("Book Status: " + (book.getStatus() ? "SYSTEM: Available" : "SYSTEM: Checked Out"));
+						book.Display();
 						System.out.println();
 						validInput = true; // Set to true if all inputs are valid
 						break;
