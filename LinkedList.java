@@ -1,10 +1,8 @@
-package pack;
+//package pack;
+// Jonathan Blackwood (2306822), 20/2/2025, LinkedList.java
 
 
-public class LinkedList<T> implements java.io.Serializable {
-    /**
-	 * 
-	 */
+public class LinkedList<T> implements Iterable<T> {
 	private static final long serialVersionUID = 1L;
 	protected Node<T> head;
     // private int len;
@@ -17,19 +15,15 @@ public class LinkedList<T> implements java.io.Serializable {
         this.head = head;
     }
     
-    public LinkedList(T[] array) {
+    public LinkedList(Iterable<T> items) {
         this.head = null;
         
-        for (T item: array) {
+        for (T item: items) {
             this.append(item);
         }
     }
     
     public int len() {
-        /*
-        return this.len;
-        */
-        
         Node node = this.head;
         int len = 0;
         
@@ -42,17 +36,25 @@ public class LinkedList<T> implements java.io.Serializable {
     }
     
     public T get(int n) {
+        if (this.head == null) {
+            return null;
+        }
+        
         return this.node(n).data;
     }
     
     public T first() {
+        if (this.head == null) {
+            return null;
+        }
+        
         return this.head.data;
     }
     
     public T last() {
-        /*
-        return this.node(this.len - 1).data;
-        */
+        if (this.head == null) {
+            return null;
+        }
         
         Node<T> node = this.head;
         
@@ -75,10 +77,6 @@ public class LinkedList<T> implements java.io.Serializable {
             }
             
             node.next = new Node(data);
-            
-            /*
-            this.node(this.len - 1).next = new Node(data);
-            */
         }
     }
     
@@ -94,26 +92,20 @@ public class LinkedList<T> implements java.io.Serializable {
             while (i < n) {
                 prev = node;
                 node = node.next;
+                i += 1;
             }
             
-            Node<T> ins = new Node(data);
-            prev.next = ins;
-            ins.next = node;
+            Node<T> insert = new Node(data);
+            prev.next = insert;
+            insert.next = node;
         }
-        
-        /*
-        if (n == 0) {
-            this.head = new Node(data);
-        }
-        else {
-            this
-        }
-        
-        Node<T> prev = this.node()
-        */
     }
     
     public T RemoveFirst() {
+        if (this.head == null) {
+            return null;
+        }
+        
         Node<T> node = this.head;
         
         this.head = node.next;
@@ -123,6 +115,10 @@ public class LinkedList<T> implements java.io.Serializable {
     public T RemoveLast() {
         Node<T> node = this.head;
         Node<T> prev = null;
+        
+        if (this.head == null) {
+            return null;
+        }
         
         while (node.next != null) {
             prev = node;
@@ -138,7 +134,11 @@ public class LinkedList<T> implements java.io.Serializable {
         Node<T> prev = null;
         int i = 0;
         
-        while (i < n) {
+        if (this.head == null) {
+            return null;
+        }
+        
+        while (i < n && node.next != null) {
             prev = node;
             node = node.next;
             i += 1;
@@ -147,8 +147,6 @@ public class LinkedList<T> implements java.io.Serializable {
         prev.next = null;
         return node.data;
     }
-    
-    
     
     private Node<T> node(int n) {
         Node<T> node = this.head;
@@ -178,7 +176,7 @@ public class LinkedList<T> implements java.io.Serializable {
         return output;
     }
     
-    // To loop through each Node that contains objects - Chev
+  //Alternative way to loop through each node
     public void forEach(java.util.function.Consumer<T> action) {
         Node<T> current = head;
         while (current != null) {
@@ -186,9 +184,36 @@ public class LinkedList<T> implements java.io.Serializable {
             current = current.next;
         }
     }
+    
+    
+    public LinkedListIter<T> iterator() {
+        return new LinkedListIter(this.head);
+    }
+    
     public void Display() {
         System.out.println(this.toString());
     }
 }
 
+class LinkedListIter<T> implements Iterator<T> {
+    private Node<T> node;
+    
+    public LinkedListIter(Node<T> head) {
+        this.node = head;
+    }
+    
+    public T next() {
+        if (!this.hasNext()) {
+            throw new NoSuchElementException();
+        }
+        
+        Node<T> item = this.node;
+        this.node = item.next;
+        return item.data;
+    }
+    
+    public boolean hasNext() {
+        return this.node != null;
+    }
+}
 
