@@ -7,3 +7,4 @@ List of latest classes (for now)
 5. User.java
 6. Admin.java
 7. Stack.java
+8. Password.java
