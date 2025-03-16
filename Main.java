@@ -178,7 +178,7 @@ public class Main {
     public void patronMenu(Patron patron) {
         boolean active = true;
         while (active) {
-            System.out.printf("\nWelcome Patron %s %s, please choose an option:\n", patron.getFname(), patron.getLname());
+            System.out.printf("\nWelcome Patron " + patron.getFname() + " " + patron.getLname() + "please choose an option:\n", );
             System.out.println("[1] Search Book (To be implemented )");
             System.out.println("[2] Check Out Book (To be implemented)");
             System.out.println("[3] Return Book (To be implemented )");
