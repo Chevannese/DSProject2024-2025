@@ -1,4 +1,4 @@
-package pack;
+//package pack;
 
 /*
 Name: Chevannese Ellis
@@ -91,7 +91,8 @@ public class Book {
         
         System.out.println("The status of the book is: " + (status ? "Available" : "Checked Out"));
     }
-    
+
+	//XML Method
     public String toXML() {
     	return "    <Book>\n" +
     	           "      <ISBN>" + ISBN + "</ISBN>\n" +
@@ -101,7 +102,7 @@ public class Book {
     	           "      <status>" + status + "</status>\n" +
     	           "    </Book>";
     	}
-
+	//toString Method
 	@Override
 	public String toString() {
 		return "Book [ISBN=" + ISBN + ", title=" + title + ", authorFName=" + authorFName + ", authorLName="
