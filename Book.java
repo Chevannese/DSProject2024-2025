@@ -85,11 +85,10 @@ public class Book {
 
     // Display Method
     public void Display() {
-    	System.out.println("The ISBN of the book is: " + ISBN);
-        System.out.println("The title of the book is: " + title);
-        System.out.println("The author of the book is: " + authorFName + " " + authorLName);
-        
-        System.out.println("The status of the book is: " + (status ? "Available" : "Checked Out"));
+    	System.out.println("Book ISBN: " + ISBN);
+	System.out.println("Book Title: " + title);
+	System.out.println("Book Author: " + authorFName + " " + authorLName;
+	System.out.println("Book Status: " + (status ? "SYSTEM: Available" : "SYSTEM: Checked Out"));
     }
 
 	//XML Method
