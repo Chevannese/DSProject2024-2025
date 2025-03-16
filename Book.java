@@ -87,7 +87,7 @@ public class Book {
     public void Display() {
     	System.out.println("Book ISBN: " + ISBN);
 	System.out.println("Book Title: " + title);
-	System.out.println("Book Author: " + authorFName + " " + authorLName;
+	System.out.println("Book Author: " + authorFName + " " + authorLName);
 	System.out.println("Book Status: " + (status ? "SYSTEM: Available" : "SYSTEM: Checked Out"));
     }
 
