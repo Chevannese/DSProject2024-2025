@@ -1,14 +1,14 @@
-//Chevannese Ellis, 2301109, March 17, 2025, BST.java
+//Chevannese Ellis, 2301109, March 17, 2025, BinarySearchTree.java
 
-package pack;
+//package pack;
 
 import java.util.Iterator;
 
-public class BST<T extends Comparable<T>> implements java.io.Serializable {
+public class BinarySearchTree<T extends Comparable<T>> implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
     private TreeNode<T> root;
 
-    public BST() {
+    public BinarySearchTree() {
         root = null;
     }
 
