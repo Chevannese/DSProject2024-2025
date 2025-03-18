@@ -2,10 +2,14 @@
 // Jonathan Blackwood (2306822), 20/2/2025, LinkedList.java
 
 
-public class LinkedList<T> implements Iterable<T> {
+//package  pack;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+public class LinkedList<T> implements java.io.Serializable, Iterable<T> {
 	private static final long serialVersionUID = 1L;
 	protected Node<T> head;
-    // private int len;
     
     public LinkedList() {
         this.head = null;
@@ -148,6 +152,36 @@ public class LinkedList<T> implements Iterable<T> {
         return node.data;
     }
     
+    public T Remove(String name) {
+        Node<T> node = this.head;
+        Node<T> prev = null;
+
+        // If the list is empty, return null
+        if (this.head == null) {
+            return null;
+        }
+
+        // Traverse the list to find the node with the matching data
+        while (node != null) {
+            if (node.data.equals(name)) {
+                // If the node to be removed is the head
+                if (prev == null) {
+                    this.head = node.next;
+                } else {
+                    prev.next = node.next;
+                }
+                return node.data;
+            }
+            prev = node;
+            node = node.next;
+        }
+
+        // If the target is not found, return null
+        return null;
+    }
+    
+    
+    
     private Node<T> node(int n) {
         Node<T> node = this.head;
         int i = 0;
@@ -174,15 +208,6 @@ public class LinkedList<T> implements Iterable<T> {
         }
         
         return output;
-    }
-    
-  //Alternative way to loop through each node
-    public void forEach(java.util.function.Consumer<T> action) {
-        Node<T> current = head;
-        while (current != null) {
-            action.accept(current.data);
-            current = current.next;
-        }
     }
     
     
