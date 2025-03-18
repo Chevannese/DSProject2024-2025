@@ -7,8 +7,12 @@ Date: February 21, 2025
 Book.java
 */
 
-public class Book {
-    // Attributes
+public class Book implements java.io.Serializable, Comparable<Book>{
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// Attributes
     private String ISBN;
     private String title;
     private String authorFName;
@@ -88,7 +92,7 @@ public class Book {
     	System.out.println("Book ISBN: " + ISBN);
 	System.out.println("Book Title: " + title);
 	System.out.println("Book Author: " + authorFName + " " + authorLName);
-	System.out.println("Book Status: " + (status ? "SYSTEM: Available" : "SYSTEM: Checked Out"));
+	System.out.println("Book Status: " + (status ? "SYSTEM: Available" : "SYSTEM: Checked Out\n"));
     }
 
 	//XML Method
@@ -101,12 +105,18 @@ public class Book {
     	           "      <status>" + status + "</status>\n" +
     	           "    </Book>";
     	}
-	//toString Method
-	@Override
+	
+    @Override
 	public String toString() {
-		return "Book [ISBN=" + ISBN + ", title=" + title + ", authorFName=" + authorFName + ", authorLName="
-				+ authorLName + ", status=" + status + "]";
+		return "Book [ISBN= " + ISBN + ", title= " + title + ", author= " + authorFName + " " + authorLName 
+				+ ", status= " + status + "]\n";
 	}
+
+	@Override
+	public int compareTo(Book other) {
+        // Compare books by title
+        return this.ISBN.compareTo(other.ISBN);
+    }
     
     
     
