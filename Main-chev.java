@@ -1,4 +1,4 @@
-package pack;
+//package pack;
 
 import java.io.*;
 import java.io.FileWriter;
@@ -39,17 +39,6 @@ public class Main {
 	private static LinkedList<Admin> admins;
 	private static JFrame window;
 	
-	public static <T extends Serializable> void save(String file, T data) throws IOException {
-		ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file));
-		output.writeObject(data);
-	}
-
-	public static <T extends Serializable> T read(String file) throws IOException, ClassNotFoundException {
-		ObjectInputStream input = new ObjectInputStream(new FileInputStream(file));
-		return (T) input.readObject();
-	}
-
-	
 	
 	public static void main(String[] args) 
 	{
@@ -63,7 +52,7 @@ public class Main {
 			books2.append(new Book("456789", "uheruhq", "ierioeaj", "ojeorea", true));
 			books2.append(new Book("yegra", "Amulet", "ijeire", "joe", false));
 			
-			patrons.append(new Patron("1","Shenna","Miracles","what",pass, "keyrus1",books1));
+			/*patrons.append(new Patron("1","Shenna","Miracles","what",pass, "keyrus1",books1));
 			patrons.append(new Patron("2","Adam","Rose","AR",pass, "captionbakery",books2));
 			patrons.append(new Patron("3","Steve","Watts","Stevie",pass, "keyrus1",books1));
 			patrons.append(new Patron("4","Shenna","Miracles","what",pass, "keyrus1",books1));
@@ -84,15 +73,16 @@ public class Main {
 			for (Patron run: patrons2) 
 			{
 				run.Display();
-		    }
+		    }*/
 
 			Book book1 = new Book("111-222-333", "The Great Gatsby", "F. Scott", "Fitzgerald", false);
 			Book book2 = new Book("444-555-666", "To Kill a Mockingbird", "Harper", "Lee", false);
 			Book book3 = new Book("777-888-999", "1984", "George", "Orwell", false);
 			Book book4 = new Book("123-456-789", "Pride and Prejudice", "Jane", "Austen", false);
 			Book book5 = new Book("987-654-321", "Moby-Dick", "Herman", "Melville", false);
+			books = new LinkedList<Book>(Arrays.asList(book1, book2, book3, book4, book5));
 			
-			Stack<Book> bookstore = new Stack<Book>();
+			/*Stack<Book> bookstore = new Stack<Book>();
 			
 			bookstore.push(book1);
 			bookstore.push(book2);
@@ -114,26 +104,69 @@ public class Main {
 				books.Display();
 			}*/
 			
-			BST<Book> tree = new BST<Book>();
-			tree.insert(book1, book1);
-	        tree.insert(book2, book2);
-	        tree.insert(book3, book3);
-	        tree.insert(book4, book4);
+			Scanner scanner = new Scanner(System.in);
 
-	        System.out.println("Books in alphabetical order:");
-	        tree.displayTree();;
+	        
+	        System.out.println("[1] - Sort by ISBN");
+	        System.out.println("[2] - Sort by Title");
+	        System.out.println("[3] - Sort by Author First Name");
+	        System.out.println("[4] - Sort by Author Last Name");
+	        System.out.print("Choose sorting option: ");
+
+	        int option = scanner.nextInt();
+	        scanner.nextLine(); // Consume newline
+
+	        BookSearch sortBook = new BookSearch(books, option);
+
+	        // Insert sample books
+	        /*
+	        sortBook.insert(new Book("123-123-123", "Harry Potter", "J.K.", "Rowling", false));
+	        sortBook.insert(new Book("456-456-456", "The Hobbit", "J.R.R.", "Tolkien",true));
+	        sortBook.insert(new Book("789-789-789", "Moby Dick", "Herman", "Melville",false));
+	        sortBook.insert(new Book("101-101-101", "The Great Gatsby", "F. Scott", "Fitzgerald",true));
+
+*/
+	        System.out.println("Book sorting order:");
+	        sortBook.displayTree();
+	        
+	        System.out.println("[1] - Search by ISBN ");
+	        System.out.println("[2] - Search by Title");
+	        System.out.println("[3] - Search by Author First Name");
+	        System.out.println("[4] - Search by Author Last Name");
+	        System.out.print("\nEnter search term option (1-4): ");
+	        option = scanner.nextInt();
+	        scanner.nextLine();
+	        
+	        System.out.println("Enter the desired term: ");
+	        
+	        String searchValue;
+	        searchValue = scanner.nextLine();
+	        
+
+	        Book foundBook = sortBook.search(searchValue,option);
+	        if (foundBook != null) {
+	            System.out.println("Found: " + foundBook);
+	        } else {
+	            System.out.println("Book not found.");
+	        }
+
+	        scanner.close();
+	    }
+	        
 			
-			
-		}
+		
 	
 	public static <T extends Serializable> void save(String file, T data) throws IOException {
 		ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file));
 		output.writeObject(data);
+		output.close();;
 	}
 
-	public static <T extends Serializable> T read1(String file) throws IOException, ClassNotFoundException {
+	public static <T extends Serializable> T read(String file) throws IOException, ClassNotFoundException {
 		ObjectInputStream input = new ObjectInputStream(new FileInputStream(file));
-		return (T) input.readObject();
+		T data = (T) input.readObject();
+		input.close();
+		return data;
 	}
 		
 	}
