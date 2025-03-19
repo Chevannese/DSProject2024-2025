@@ -1,4 +1,4 @@
-package pack;
+//package pack;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
