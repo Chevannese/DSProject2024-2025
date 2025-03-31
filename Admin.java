@@ -270,7 +270,8 @@ public class Admin extends User {
 				System.out.println("Book Status: " + (b.getStatus() ? "Available" : "Checked Out"));
 
 				books.append(b);
-				AppendToBookData(filePath, books);
+				b.toXML();
+				WriteBookData(filePath, books);
 
 				validInput = false; // Reset validInput for each prompt
 
@@ -344,7 +345,7 @@ public class Admin extends User {
 						System.out.println("Book Author: " + book.getAuthorFname() + " " + book.getAuthorLname());
 						System.out.println("Book Status: " + (book.getStatus() ? "Available" : "Checked Out"));
 
-						updateBookData(filePath, book); // Update the book data in the file.
+						WriteBookData(filePath, books); // Update the book data in the file.
 
 						validInput = true; // Set to true if all inputs are valid
 						break;
@@ -408,56 +409,56 @@ public class Admin extends User {
 
 		while (continueRemoving) {
 			try {
-                System.out.print("\n---Removing Book---\n");
-                System.out.print("\nEnter book's ISBN to delete: ");
-                String isbn = scanner.nextLine();
+				System.out.print("\n---Removing Book---\n");
+				System.out.print("\nEnter book's ISBN to delete: ");
+				String isbn = scanner.nextLine();
 
-                Book bookToRemove = null;
+				Book bookToRemove = null;
 
-                for (Book book : books) {
-                    if (book.getISBN().equals(isbn)) {
-                        found = true;
-                        bookToRemove = book;
-                        break;
-                    }
-                }
+				for (Book book : books) {
+					if (book.getISBN().equals(isbn)) {
+						found = true;
+						bookToRemove = book;
+						break;
+					}
+				}
 
-                if (bookToRemove != null) {
-                    boolean isBookCheckedOut = false;
+				if (bookToRemove != null) {
+					boolean isBookCheckedOut = false;
 
-                    for (Patron patron : patrons) {
-                        for (Book patronBook : patron.getBooks()) {
-                            if (bookToRemove.getISBN().equals(patronBook.getISBN())) {
-                                if (patronBook.getStatus() == false) {
-                                    isBookCheckedOut = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (isBookCheckedOut) {
-                            break;
-                        }
-                    }
+					for (Patron patron : patrons) {
+						for (Book patronBook : patron.getBooks()) {
+							if (bookToRemove.getISBN().equals(patronBook.getISBN())) {
+								if (patronBook.getStatus() == false) {
+									isBookCheckedOut = true;
+									break;
+								}
+							}
+						}
+						if (isBookCheckedOut) {
+							break;
+						}
+					}
 
-                    if (isBookCheckedOut) {
-                        System.out.println("\nSYSTEM: Book with ISBN " + isbn + " is currently checked out by a patron and cannot be deleted.");
-                    } else {
-                        books.Remove(bookToRemove);
-                        removeBookData(bookfileName, isbn, patrons);
-                        System.out.println("\nSYSTEM: Book with ISBN " + isbn + " has been removed.");
-                    }
-                    continueRemoving = getYesNoResponse("\nWould you like to remove another book? (yes/no): ");
+					if (isBookCheckedOut) {
+						System.out.println("\nSYSTEM: Book with ISBN " + isbn + " is currently checked out by a patron and cannot be deleted.");
+					} else {
+						books.Remove(bookToRemove);
+						WriteBookData(bookfileName, books);
+						System.out.println("\nSYSTEM: Book with ISBN " + isbn + " has been removed.");
+					}
+					continueRemoving = getYesNoResponse("\nWould you like to remove another book? (yes/no): ");
 
-                } else {
-                    System.out.println("SYSTEM: No book found with ISBN: " + isbn);
-                    continueRemoving = getYesNoResponse("\nSYSTEM: The information that you have entered is invalid. Do you want to try again (Yes/No)? ");
-                }
+				} else {
+					System.out.println("SYSTEM: No book found with ISBN: " + isbn);
+					continueRemoving = getYesNoResponse("\nSYSTEM: The information that you have entered is invalid. Do you want to try again (Yes/No)? ");
+				}
 
-            } catch (Exception e) {
-                System.err.println("\nERROR: " + e.getMessage());
-                e.printStackTrace();
-                System.out.println("\n"); //clears buffer
-            }
+			} catch (Exception e) {
+				System.err.println("\nERROR: " + e.getMessage());
+				e.printStackTrace();
+				System.out.println("\n"); //clears buffer
+			}
 		}
 	}
 
@@ -517,28 +518,12 @@ public class Admin extends User {
 				System.out.println(p.toString());
 
 				System.out.printf("\nSYSTEM: Every time a new patron is added to the LMS, they are give a default password, this one is: %s\n", generatedPassword);
-        
+
 				patrons.append(p);
-				appendPatronData(filePath, p);
-				
-				// Chev: Overwrites all patron data to file
-				for (Patron allPatrons: patrons)
-        {
-          //allPatrons.getPassword().PasswordDetailsHashToFile(p.getUsername(),generatedPassword);
-				  allPatrons.writeUsernameToFile(p.getUsername(), User.UsernamesFile);
-        }
-        try(FileWriter file = new FileWriter("HashedPasswords.txt",true))
-        {
-          file.append(p.getUsername() + ": " + Password.hashString(generatedPassword));
-					file.append("\n");
-					file.close();
-        }
-        catch(Exception e)
-        {
-          System.err.println("Error writing to file: " + e.getMessage());
-        }
-					
-				
+				p.getPassword().PasswordDetailsHashToFile(pUsername, generatedPassword);
+				p.writeUsernameToFile(p.getUsername(), User.UsernamesFile);
+				p.toXML();
+				WritePatronData(filePath, patrons);
 
 				if (!validInput) {
 					continueAdding = getYesNoResponse("\nSYSTEM: The information that you have entered is invalid. Do you want to try again (Yes/No)? ");
@@ -656,6 +641,7 @@ public class Admin extends User {
 							}
 						}
 						break;
+						
 						default:
 							System.out.println("SYSTEM: Invalid choice.");
 							continue; // Go back to the menu
@@ -664,7 +650,7 @@ public class Admin extends User {
 						System.out.print("\nSYSTEM: Patron details updated! Here are the results!\n");
 						System.out.print("\n---Updated Patron Details---\n");
 						System.out.println(patron.toString());
-						updatePatronData(filePath, patron);
+						WritePatronData(filePath, patrons);
 
 						break; // break out of the for loop after processing a valid update
 					}
@@ -723,7 +709,7 @@ public class Admin extends User {
 						System.out.println("\nSYSTEM: Patron with library number: " + deleteID + " is in a queue. Please have them return any checked out books before removing them.");
 					} else {
 						patrons.Remove(patronToRemove);
-						removePatronData(filePath, deleteID);
+						WritePatronData(filePath, patrons);
 						System.out.println("\nSYSTEM: Patron with library number: " + deleteID + " has been removed.");
 					}
 
@@ -741,29 +727,6 @@ public class Admin extends User {
 				System.out.println("\n");
 			}
 		}
-	}
-
-	// So that it loops with response == "yes" or "y"
-	private static boolean getYesNoResponse(String prompt) {
-		Scanner scanner = new Scanner(System.in);
-		boolean validInput = false;
-		boolean response = false;
-
-		while (!validInput) {
-			System.out.print(prompt);
-			String input = scanner.nextLine().trim().toLowerCase();
-
-			if (input.equals("yes") || input.equals("y")) {
-				response = true;
-				validInput = true;
-			} else if (input.equals("no") || input.equals("n")) {
-				response = false;
-				validInput = true;
-			} else {
-				System.out.println("SYSTEM: Invalid input. Please enter 'Yes' or 'No'.");
-			}
-		}
-		return response;
 	}
 
 	// ------------------------ View Library Statistics ------------------------ Jevana
@@ -801,7 +764,7 @@ public class Admin extends User {
 
 	//-------------------------Files Section---------------------------------
 
-// Writes book to xml file - Chev
+	// Writes book to xml file - Chev
 	public static void WriteBookData(String fileName, LinkedList<Book> parameterlist) {
 		// Write the CustomLinkedList to an XML file
 		try (FileWriter writer = new FileWriter(fileName)) {
@@ -823,7 +786,7 @@ public class Admin extends User {
 		}
 	}
 
-// Read and Retrieve All Book Data from the xml file - Chev
+	// Read and Retrieve All Book Data from the xml file - Chev
 	public static void loadBookData(String filePath, LinkedList<Book> parameterlist) {
 		try {
 			// Load the XML file
@@ -858,169 +821,11 @@ public class Admin extends User {
 		}
 	}
 
-// If Book XML file exists this method will append new data - Chev
-	public static void AppendToBookData(String fileName, LinkedList<Book> parameterList) {
-		try {
-			// Parse the existing XML file
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document doc = builder.parse(new File(fileName));
-
-			// Get the root element
-			Element root = doc.getDocumentElement();
-
-			parameterList.forEach(book -> {
-				// Create a <Book> element
-				Element bookElement = doc.createElement("Book");
-
-				// Add child elements for Book attributes
-				appendChildElement(doc, bookElement, "ISBN", book.getISBN());
-				appendChildElement(doc, bookElement, "title", book.getTitle());
-				appendChildElement(doc, bookElement, "authorFName", book.getAuthorFname());
-				appendChildElement(doc, bookElement, "authorLName", book.getAuthorLname());
-				appendChildElement(doc, bookElement, "status", String.valueOf(book.getStatus()));
-
-				// Append the <Book> element to the <Collection>
-				root.appendChild(bookElement);
-			});
-
-			// Write the updated XML back to the file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(fileName));
-			transformer.transform(source, result);
-
-			System.out.println("\nSYSTEM: Data appended to file successfully.\n");
-		} catch (Exception e) {
-			System.err.println("\nAn error occurred while appending the patron info.\n");
-			e.printStackTrace();
-			System.out.print("\n");
-		}
-	}
-
-// Methods used to append the child elements of Books - Chev
+	// Methods used to append the child elements of Books - Jada
 	public static void appendChildElement(Document doc, Element parent, String tagName, String textContent) {
-		Element child = doc.createElement(tagName);
-		child.setTextContent(textContent);
-		parent.appendChild(child);
-	}
-
-// Method to update a Book's data in the XML file - Jada
-	public static void updateBookData(String filePath, Book updatedBook) {
-		try {
-			File xmlFile = new File(filePath);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlFile);
-			doc.getDocumentElement().normalize();
-
-			NodeList bookList = doc.getElementsByTagName("Book");
-			for (int i = 0; i < bookList.getLength(); i++) {
-				Element bookElement = (Element) bookList.item(i);
-				String isbn = getTagValue("ISBN", bookElement);
-
-				if (isbn.equals(updatedBook.getISBN())) {
-					// Remove the existing Book element
-					bookElement.getParentNode().removeChild(bookElement);
-
-					// Create a new Book element with the updated data
-					Element newBookElement = doc.createElement("Book");
-					doc.getDocumentElement().appendChild(newBookElement);
-
-					// Populate the new Book element with data from the Book object
-					appendChildElement(doc, newBookElement, "ISBN", updatedBook.getISBN());
-					appendChildElement(doc, newBookElement, "Title", updatedBook.getTitle());
-					appendChildElement(doc, newBookElement, "AuthorFirstName", updatedBook.getAuthorFname());
-					appendChildElement(doc, newBookElement, "AuthorLastName", updatedBook.getAuthorLname());
-					appendChildElement(doc, newBookElement, "AvailabilityStatus", String.valueOf(updatedBook.getStatus()));
-
-					// Save the updated XML
-					TransformerFactory transformerFactory = TransformerFactory.newInstance();
-					Transformer transformer = transformerFactory.newTransformer();
-					DOMSource source = new DOMSource(doc);
-					StreamResult result = new StreamResult(new File(filePath));
-					transformer.transform(source, result);
-
-					System.out.println("\nSYSTEM: Book with ISBN " + isbn + " updated to file successfully.");
-					return; // Exit after update
-				}
-			}
-
-			System.out.println("\nSYSTEM: Book with ISBN " + updatedBook.getISBN() + " not found and can't be updated to file.");
-
-		} catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-			System.err.println("\nERROR: An error occurred while updating book data: " + e.getMessage());
-			e.printStackTrace();
-		}
-	}
-
-	// Method to remove a Book from the XML file - Jada
-	public static void removeBookData(String filePath, String bookISBN, LinkedList<Patron> patrons) {
-		try {
-		    // Check if book is checked out.
-        boolean isBookCheckedOut = false;
-        System.out.println("DEBUG: Number of patrons: " + patrons.len()); // Debug: Patron list size
-
-        for (Patron patron : patrons) {
-            System.out.println("DEBUG: Patron's book list: " + patron.getBooks().toString()); // Debug: Patron book list
-
-            for (Book patronBook : patron.getBooks()) {
-                System.out.println("DEBUG: Comparing bookISBN: " + bookISBN + " with patronBook ISBN: " + patronBook.getISBN()); // Debug: ISBN comparison
-
-                if (patronBook.getISBN().equals(bookISBN)) {
-                    System.out.println("DEBUG: Book found in patron's list. Status: " + patronBook.getStatus()); // Debug: Status check
-                    if (patronBook.getStatus()) {
-                        isBookCheckedOut = true;
-                        System.out.println("\nSYSTEM: Book with ISBN " + bookISBN + " is currently checked out and cannot be removed.");
-                        return;
-                    }
-                }
-            }
-            if (isBookCheckedOut) {
-                return;
-            }
-        }
-        
-			File xmlFile = new File(filePath);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlFile);
-			doc.getDocumentElement().normalize();
-
-			NodeList bookList = doc.getElementsByTagName("Book");
-			boolean bookFound = false; // Flag to track if the book was found.
-
-			for (int i = 0; i < bookList.getLength(); i++) {
-				Element bookElement = (Element) bookList.item(i);
-				String isbn = getTagValue("ISBN", bookElement);
-
-				if (isbn.equals(bookISBN)) {
-					// Remove the Book element
-					bookElement.getParentNode().removeChild(bookElement);
-
-					// Save the updated XML
-					TransformerFactory transformerFactory = TransformerFactory.newInstance();
-					Transformer transformer = transformerFactory.newTransformer();
-					DOMSource source = new DOMSource(doc);
-					StreamResult result = new StreamResult(new File(filePath));
-					transformer.transform(source, result);
-
-					System.out.println("\nSYSTEM: Book with ISBN " + bookISBN + " removed from file successfully.");
-					bookFound = true;
-					return; // Exit after removal
-				}
-			}
-
-			if (!bookFound) {
-				System.out.println("\nSYSTEM: Book with ISBN " + bookISBN + " not found and can't be removed from file.");
-			}
-
-		} catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-			System.err.println("\nERROR: An error occurred while removing book data: " + e.getMessage());
-			e.printStackTrace();
-			System.out.println("\n"); // clears buffer - Jada
-		}
+		Element element = doc.createElement(tagName);
+		element.appendChild(doc.createTextNode(textContent));
+		parent.appendChild(element);
 	}
 
 	// Writes all patron information to xml file - Chev
@@ -1033,20 +838,23 @@ public class Admin extends User {
 				try {
 					writer.write(patron.toXML()); // Convert the Patron object to XML and write it to the file
 					writer.write("\n"); // Add a new line for better readability
+					writer.flush(); // Flush after writing each patron
 				} catch (IOException e) {
 					e.printStackTrace(); // Print the stack trace if an error occurs while writing
 				}
 			});
 
 			writer.write("</Patrons>"); // Close the root element "Patrons"
+			writer.flush(); // Flush after writing each patron
 			System.out.println("SYSTEM: Patron Data written to file successfully."); // Inform the user that the operation was successful
 		} catch (IOException e) {
 			System.err.println("\nERROR: An error occurred while saving the patron info." + e.getMessage()); // Print an error message if an exception occurs
 			e.printStackTrace(); // Print the stack trace
+			System.out.println("\n"); // Add a new line for better formatting
 		}
 	}
 
-// Read and Retrieve All Patron Data from the xml file - Chev
+	// Read and Retrieve All Patron Data from the xml file - Chev
 	public static void loadPatronData(String filePath, LinkedList<Patron> patrons) {
 		try {
 			// Load the XML file
@@ -1058,6 +866,7 @@ public class Admin extends User {
 
 			// Get all Patron elements
 			NodeList patronList = doc.getElementsByTagName("Patron"); // Get a list of all "Patron" elements
+			
 			for (int i = 0; i < patronList.getLength(); i++) { // Loop through each Patron element
 				org.w3c.dom.Node patronNode = patronList.item(i);
 				if (patronNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) { // Check if the node is an element
@@ -1087,7 +896,9 @@ public class Admin extends User {
 					}
 				}
 			}
+			
 			System.out.println("SYSTEM: Patron XML file loaded successfully."); // Inform the user that the file was loaded successfully
+			
 		} catch (Exception e) {
 			System.err.println("\nAn error occurred while loading the Patron XML file.\n" + e.getMessage()); // Print an error message if an exception occurs
 			e.printStackTrace(); // Print the stack trace
@@ -1097,7 +908,7 @@ public class Admin extends User {
 		//return patrons; // This line seems to be commented out, so it's not doing anything.
 	}
 
-// Method to extract tag values - Jada
+	// Method to extract tag values - Jada
 	private static String getTagValue(String tag, Element element) {
 		org.w3c.dom.NodeList nodeList = element.getElementsByTagName(tag); // Get a list of nodes with the given tag
 
@@ -1118,198 +929,5 @@ public class Admin extends User {
 			}
 		}
 		return ""; // Return an empty string if the tag is not found or the value is empty
-	}
-
-// Method to append a new Patron to the XML file - Jada
-	public static void appendPatronData(String filePath, Patron newPatron) {
-		try {
-			File xmlFile = new File(filePath);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc;
-
-			if (xmlFile.exists()) { // Check if the XML file exists
-				doc = dBuilder.parse(xmlFile); // Parse the existing file
-				doc.getDocumentElement().normalize();
-			} else {
-				doc = dBuilder.newDocument(); // Create a new document if the file doesn't exist
-				Element rootElement = doc.createElement("Patrons"); // Create the root element
-				doc.appendChild(rootElement); // Append the root element to the document
-			}
-
-			Element root = doc.getDocumentElement(); // Get the root element
-			Element newPatronElement = doc.createElement("Patron"); // Create a new Patron element
-			root.appendChild(newPatronElement); // Append the new Patron element to the root
-
-			// Populate the new Patron element with data from the Patron object
-			populatePatronElement(newPatronElement, newPatron); // Call a method to populate the element
-
-			// Save the updated XML
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(filePath));
-			transformer.transform(source, result);
-
-			System.out.println("SYSTEM: Patron data appended successfully."); // Inform the user that the operation was successful
-
-		} catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-			System.err.println("\nERROR: An error occurred while appending patron data: " + e.getMessage()); // Print an error message if an exception occurs
-			e.printStackTrace(); // Print the stack trace
-			System.out.print("\n"); // Add a new line for better formatting
-		}
-	}
-
-// Method to populate a Patron element with data - Jada
-	public static void populatePatronElement(Element patronElement, Patron patron) {
-		Document doc = patronElement.getOwnerDocument(); // Get the document that owns the Patron element
-
-		// Using toXML() method from Patron
-		String xmlString = patron.toXML(); // Get the XML representation of the Patron object
-
-		try {
-			// Parse the XML string into a DocumentFragment
-			DocumentFragment fragment = doc.createDocumentFragment();
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder builder = factory.newDocumentBuilder();
-			Document tempDoc = builder.parse(new org.xml.sax.InputSource(new java.io.StringReader("<temp>" + xmlString + "</temp>"))); // Parse the XML string into a temporary document
-
-			NodeList nodes = tempDoc.getDocumentElement().getChildNodes(); // Get a list of child nodes from the temporary document
-			for (int i = 0; i < nodes.getLength(); i++) { // Loop through each child node
-				org.w3c.dom.Node node = doc.importNode(nodes.item(i), true); // Import the node into the current document
-				fragment.appendChild(node); // Append the imported node to the fragment
-			}
-
-			patronElement.appendChild(fragment); // Append the fragment to the Patron element
-
-			// Add book elements after the basic patron info.
-			for (Book book : patron.getBooks()) { // Loop through each book in the patron's book list
-				Element bookElement = doc.createElement("Book"); // Create a new Book element
-
-				Element isbn = doc.createElement("ISBN"); // Create an ISBN element
-				isbn.appendChild(doc.createTextNode(book.getISBN())); // Set the ISBN value
-				bookElement.appendChild(isbn); // Append the ISBN element to the Book element
-
-				Element title = doc.createElement("Title"); // Create a Title element
-				title.appendChild(doc.createTextNode(book.getTitle())); // Set the Title value
-				bookElement.appendChild(title); // Append the Title element to the Book element
-
-				Element authorFName = doc.createElement("AuthorFirstName"); // Create an AuthorFirstName element
-				authorFName.appendChild(doc.createTextNode(book.getAuthorFname())); // Set the AuthorFirstName value
-				bookElement.appendChild(authorFName); // Append the AuthorFirstName element to the Book element
-
-				Element authorLName = doc.createElement("AuthorLastName"); // Create an AuthorLastName element
-				authorLName.appendChild(doc.createTextNode(book.getAuthorLname())); // Set the AuthorLastName value
-				bookElement.appendChild(authorLName); // Append the AuthorLastName element to the Book element
-
-				Element status = doc.createElement("AvailabilityStatus"); // Create an AvailabilityStatus element
-				status.appendChild(doc.createTextNode(String.valueOf(book.getStatus()))); // Set the AvailabilityStatus value
-				bookElement.appendChild(status); // Append the AvailabilityStatus element to the Book element
-
-				patronElement.appendChild(bookElement); // Append the Book element to the Patron element
-			}
-
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			System.err.println("\nError: " + e.getMessage()); // Print an error message if an exception occurs
-			e.printStackTrace(); // Print the stack trace
-			System.out.print("\n"); // Add a new line for better formatting
-		}
-	}
-
-    // Method to update a Patron's data to the XML file - Jada
-	public static void updatePatronData(String filePath, Patron updatedPatron) {
-		try {
-			File xmlFile = new File(filePath);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlFile); // Parse the XML file
-			doc.getDocumentElement().normalize();
-
-			NodeList patronList = doc.getElementsByTagName("Patron"); // Get a list of all Patron elements
-			java.util.List<Element> nodesToRemove = new java.util.ArrayList<>(); // Create a list to store nodes to remove
-			Element newPatronElement = null;
-
-			for (int i = 0; i < patronList.getLength(); i++) { // Loop through each Patron element
-				Element patronElement = (Element) patronList.item(i);
-				String userID = getTagValue("LibraryNumber", patronElement); // Get the LibraryNumber
-
-				if (userID.trim().equals(updatedPatron.getUserID().trim())) { // Trim both values and check if they are equal
-					nodesToRemove.add(patronElement); // Add the node to the list of nodes to remove
-
-					// Create a new Patron element with the updated data
-					newPatronElement = doc.createElement("Patron");
-					populatePatronElement(newPatronElement, updatedPatron); // Call a method to populate the element
-
-					System.out.println("SYSTEM: Patron with library number " + userID + " found and will be updated to file."); // Inform the user that the patron was found and will be updated
-					break; // Exit after found
-				}
-			}
-
-			if (!nodesToRemove.isEmpty()) { // Check if there are nodes to remove
-				// Remove the existing Patron elements
-				for (Element nodeToRemove : nodesToRemove) {
-					nodeToRemove.getParentNode().removeChild(nodeToRemove); // Remove the node from the parent
-				}
-
-				// Add the new Patron element
-				doc.getDocumentElement().appendChild(newPatronElement); // Append the new Patron element to the document
-
-				// Save the updated XML
-				TransformerFactory transformerFactory = TransformerFactory.newInstance();
-				Transformer transformer = transformerFactory.newTransformer();
-				DOMSource source = new DOMSource(doc);
-				StreamResult result = new StreamResult(new File(filePath));
-				transformer.transform(source, result);
-
-				System.out.println("SYSTEM: XML File written successfully."); // Inform the user that the file was written successfully
-
-			} else {
-				System.out.printf("SYSTEM: Patron with library number %s is not found and cannot be updated to file.", updatedPatron.getUserID()); // Inform the user that the patron was not found
-			}
-
-		} catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-			System.err.println("ERROR: An error occurred while updating patron data: " + e.getMessage());
-			e.printStackTrace();
-			System.out.print("\n");
-		}
-	}
-
-    // Method to remove a Patron from the XML file - Jada
-	public static void removePatronData(String filePath, String patronUserID) {
-		try {
-			File xmlFile = new File(filePath);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlFile); // Parse the XML file
-			doc.getDocumentElement().normalize();
-
-			NodeList patronList = doc.getElementsByTagName("Patron"); // Get a list of all Patron elements
-			for (int i = 0; i < patronList.getLength(); i++) { // Loop through each Patron element
-				Element patronElement = (Element) patronList.item(i);
-				String userID = getTagValue("LibraryNumber", patronElement); // Get the LibraryNumber
-
-				if (userID.equals(patronUserID)) { // Check if the LibraryNumber matches the given patronUserID
-					// Remove the Patron element
-					patronElement.getParentNode().removeChild(patronElement); // Remove the node from the parent
-
-					// Save the updated XML
-					TransformerFactory transformerFactory = TransformerFactory.newInstance();
-					Transformer transformer = transformerFactory.newTransformer();
-					DOMSource source = new DOMSource(doc);
-					StreamResult result = new StreamResult(new File(filePath));
-					transformer.transform(source, result);
-
-					System.out.println("\nSYSTEM: Patron with library number " + patronUserID + " removed from file successfully."); // Inform the user that the patron was removed successfully
-					return; // Exit after removal
-				}
-			}
-
-			System.out.println("\nSYSTEM: Patron with library number " + patronUserID + " not found and can't be removed from file."); // Inform the user that the patron was not found
-
-		} catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
-			System.err.println("\nERROR: An error occurred while removing patron data: " + e.getMessage());
-			e.printStackTrace();
-			System.out.println("\n");
-		}
 	}
 }
